@@ -119,24 +119,33 @@ int main(void)
             get_in_addr((struct sockaddr *)&their_addr),
             s, sizeof s);
         printf("server: got connection from %s\n", s);
-        fprintf(stdout, "CONNECTION RECEIVED: ABOUT TO FORK");
+        fprintf(stdout, "CONNECTION RECEIVED: ABOUT TO FORK\n");
+        
         if (!fork()) { // this is the child process
             fprintf(stdout, "CONNECTION REVIEVED: FORK SUCCESS\n");
             close(sockfd); // child doesn't need the listener
+           
             if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
-            perror("error with receipt of data");
-            exit(1);
-        }
-         //ADD RECEIVE AND FINGER HERE
-        buf[numbytes] = '\0';
-        printf("client: received '%s'\n",buf);
+                perror("error with receipt of data");
+                exit(1);
+            }
+            //ADD RECEIVE AND FINGER HERE
+            buf[numbytes] = '\0';
+            printf("client: received '%s'\n",buf);
+            char *fingerres;
+            dup2(2,1);
+            dup2(new_fd, 1);
 
-
-            if (send(new_fd, "Hello, world!", 13, 0) == -1)
-                perror("send");
+            execl("/bin/finger", buf,0,0);
+            //fingerres = execl("/bin/finger", buf, 0, 0);
+            //printf("finger result: '%s'\n",fingerres);
+            //if (send(new_fd, "Hello, world!", 13, 0) == -1)
+              //  perror("send");
+            printf("DONE\n");
             close(new_fd);
             exit(0);
         }
+        
         close(new_fd);  // parent doesn't need this
     }
 
