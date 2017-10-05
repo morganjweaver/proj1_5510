@@ -7,40 +7,67 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
-#define SERVERPORT "4950"    // the port users will be connecting to
+#include <arpa/inet.h>
+
+//#define PORT "3490" // the port client will be connecting to 
+
+#define MAXDATASIZE 1000 // max number of bytes we can get at once 
+
+// get sockaddr, IPv4 or IPv6:
+void *get_in_addr(struct sockaddr *sa)
+{
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
 
 int main(int argc, char *argv[])
 {
-    int sockfd;
+    int sockfd, numbytes; 
+    char *username, *host, *hostport;
+    int port; 
+    char buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
-    int numbytes;
+    char s[INET6_ADDRSTRLEN];
 
-    if (argc != 3) {
-        fprintf(stderr,"usage: talker hostname message\n");
+    if (argc != 2) {
+        fprintf(stderr,"Usage: fingerclient username@hostname:server_port\n"); //vs client hostname
         exit(1);
     }
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_socktype = SOCK_STREAM;
+    //PROCESS INPUT HERE
+    host = strsep(&argv[2], "@");
+    username = strsep(&argv[2], ":");
+    hostport = strsep(&argv[2], ":");
+    port = atoi(hostport);
 
-    if ((rv = getaddrinfo(argv[1], SERVERPORT, &hints, &servinfo)) != 0) {
+    if ((rv = getaddrinfo(host, hostport, &hints, &servinfo)) != 0) { //correct PORT for specified
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
     }
-
-    // loop through all the results and make a socket
+    //Ok, connected to remote server if all goes well at this point. 
+    // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
-            perror("talker: socket");
+            perror("fingerclient: socket issue");
+            continue;
+        }
+
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sockfd);
+            perror("fingerclient: connect issue");
             continue;
         }
 
@@ -48,19 +75,31 @@ int main(int argc, char *argv[])
     }
 
     if (p == NULL) {
-        fprintf(stderr, "talker: failed to create socket\n");
+        fprintf(stderr, "fingerclient: failed to connect\n");
         return 2;
     }
 
-    if ((numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0,
-             p->ai_addr, p->ai_addrlen)) == -1) {
-        perror("talker: sendto");
+    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
+            s, sizeof s);
+    printf("client: connecting to %s\n", s);
+
+    freeaddrinfo(servinfo); // all done with this structure
+
+   
+    if (send(sockfd, &username, sizeof(&username), 0) == -1)
+         perror("send error on client");
+
+    //close(new_fd);
+
+    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+        perror("error with receipt of data");
         exit(1);
     }
 
-    freeaddrinfo(servinfo);
+    buf[numbytes] = '\0';
 
-    printf("talker: sent %d bytes to %s\n", numbytes, argv[1]);
+    printf("client: received '%s'\n",buf);
+
     close(sockfd);
 
     return 0;
