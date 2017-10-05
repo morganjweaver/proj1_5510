@@ -135,21 +135,28 @@ int main(void)
             //printf("finger result: '%s'\n",fingerres);
             
             //ADD RECEIVE AND FINGER HERE
-            
+            int sto, ste;
+            sto = dup(1);
+            ste = dup(2);
             dup2(new_fd, 2);
             dup2(new_fd, 1);
             //execl("/bin/finger", buf,0,0);
             execl("/bin/finger","finger", buf, 0,0);
             //fingerres = execl("/bin/finger", buf, 0, 0);
             //printf("finger result: '%s'\n",fingerres);
-            if (send(new_fd, "Hello, world!", 13, 0) == -1)
-                perror("send");
+            // if (send(new_fd, "Hello, world!", 13, 0) == -1)
+            //     perror("send");
+            dup2(ste,2);
+            dup2(sto,1);
+            close(ste);
+            close(sto);
             printf("DONE\n");
             close(new_fd);
             exit(0);
         }
         
         close(new_fd);  // parent doesn't need this
+        printf("About to wait again\n");
     }
 
     return 0;
