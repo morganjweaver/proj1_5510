@@ -145,9 +145,10 @@ int main(void)
             close(new_fd);
             exit(0);
         }
-        memset(buf, 0, sizeof(buf));
+        
         close(new_fd);  // parent doesn't need this
         printf("About to wait again\n");
+        memset(buf, 0, sizeof(MAXDATASIZE-1));
     }
 
     return 0;
