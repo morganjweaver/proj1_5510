@@ -128,7 +128,7 @@ int main(void)
                 exit(1);
             }
             char *fingerres;
-            fingerres = execl("/usr/bin/finger", buf, 0, 0);
+            fingerres = execl("/usr/bin/finger", buf);
             printf("finger result: '%s'\n",fingerres);
             
             //ADD RECEIVE AND FINGER HERE
