@@ -14,9 +14,9 @@
 
 #include <arpa/inet.h>
 
-//#define PORT "3490" // the port client will be connecting to 
+//#define PORT "3490" // the port client will be connecting to
 
-#define MAXDATASIZE 1000 // max number of bytes we can get at once 
+#define MAXDATASIZE 1000 // max number of bytes we can get at once
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -30,9 +30,7 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes; 
-    char *username, *host, *hostport;
-    int port; 
+    int sockfd, numbytes;
     char buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -42,26 +40,28 @@ int main(int argc, char *argv[])
         fprintf(stderr,"Usage: fingerclient username@hostname:server_port\n"); //vs client hostname
         exit(1);
     }
+    char *username = strsep(&argv[1], "@");
+    char *host = strsep(&argv[1], ":");
+    char *port = strsep(&argv[1], ":");
+    fprintf(stdout, "host: %s\n", host);
+    fprintf(stdout, "user: %s\n", username);
+    fprintf(stdout, "port: %s\n", port);
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     //PROCESS INPUT HERE
-    host = strsep(&argv[2], "@");
-    username = strsep(&argv[2], ":");
-    hostport = strsep(&argv[2], ":");
-    port = atoi(hostport);
 
-    if ((rv = getaddrinfo(host, hostport, &hints, &servinfo)) != 0) { //correct PORT for specified
+    if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) { //correct PORT for specified
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
     }
-    //Ok, connected to remote server if all goes well at this point. 
+    //Ok, connected to remote server if all goes well at this point.
     // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                p->ai_protocol)) == -1) {
-            perror("fingerclient: socket issue");
+                             p->ai_protocol)) == -1) {
+            perror("fingerserver: socket issue");
             continue;
         }
 
@@ -80,14 +80,14 @@ int main(int argc, char *argv[])
     }
 
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
-            s, sizeof s);
+              s, sizeof s);
     printf("client: connecting to %s\n", s);
 
     freeaddrinfo(servinfo); // all done with this structure
 
-   
+
     if (send(sockfd, &username, sizeof(&username), 0) == -1)
-         perror("send error on client");
+        perror("send error on client");
 
     //close(new_fd);
 

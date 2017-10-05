@@ -17,7 +17,7 @@
 
 #define PORT "10240"  // the port users will be connecting to
 
-#define BACKLOG 10     // how many pending connections queue will hold
+#define BACKLOG 20     // how many pending connections queue will hold
 #define MAXDATASIZE 10000
 void sigchld_handler(int s)
 {
@@ -114,7 +114,7 @@ int main(void)
             perror("accept");
             continue;
         }
-
+        printf("in loop...\n");
         inet_ntop(their_addr.ss_family,
             get_in_addr((struct sockaddr *)&their_addr),
             s, sizeof s);
