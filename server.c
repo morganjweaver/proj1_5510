@@ -142,7 +142,7 @@ int main(void)
             //execl("/bin/finger", "finger", buf, 0);
             //fingerres = execl("/bin/finger", buf, 0, 0);
             //printf("finger result: '%s'\n",fingerres);
-            if (send(new_fd, fingerres, sizeof fingerres, 0) == -1)
+            if (send(new_fd, &fingerres, sizeof &fingerres, 0) == -1)
                 perror("send");
             printf("DONE\n");
             close(new_fd);
