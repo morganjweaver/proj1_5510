@@ -92,7 +92,7 @@ int main(void)
     }
 
     if (listen(sockfd, BACKLOG) == -1) {
-        perror("listen");
+        perror("listening error");
         exit(1);
     }
 
@@ -119,8 +119,9 @@ int main(void)
             get_in_addr((struct sockaddr *)&their_addr),
             s, sizeof s);
         printf("server: got connection from %s\n", s);
-
+        fprintf(stdout, "CONNECTION RECEIVED: ABOUT TO FORK");
         if (!fork()) { // this is the child process
+            fprintf(stdout, "CONNECTION REVIEVED: FORK SUCCESS\n");
             close(sockfd); // child doesn't need the listener
             if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
             perror("error with receipt of data");
