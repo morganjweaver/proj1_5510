@@ -121,32 +121,30 @@ int main(void)
         printf("server: got connection from %s\n", s);
         
         if (!fork()) { // this is the child process
-            close(sockfd); // child doesn't need the listener
-           
-            if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
-                perror("error with receipt of data");
-                exit(1);
-            }
-            buf[numbytes] = '\0';
-            printf("client: received '%s'\n",buf);
-            char *fingerres;
-            fingerres = execl("/usr/bin/finger", "finger", buf, 0);
-            printf("finger result: '%s'\n",fingerres);
-            
-            //ADD RECEIVE AND FINGER HERE
-            
-           
-            //dup2(2,1);
-            //dup2(new_fd, 1);
-            //execl("/bin/finger", buf,0,0);
-            //execl("/bin/finger", "finger", buf, 0);
-            //fingerres = execl("/bin/finger", buf, 0, 0);
-            //printf("finger result: '%s'\n",fingerres);
-            if (send(new_fd, &fingerres, sizeof &fingerres, 0) == -1)
-                perror("send");
-            printf("DONE\n");
-            close(new_fd);
-            exit(0);
+           close(sockfd); // child doesn't need the listener
+             
+              if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
+                  perror("error with receipt of data");
+                  exit(1);
+              }
+ +            fingerres = execl("/bin/finger", buf, 0, 0);
+ +            printf("finger result: '%s'\n",fingerres);
+ +            
+              //ADD RECEIVE AND FINGER HERE
+              buf[numbytes] = '\0';
+              printf("client: received '%s'\n",buf);
+             char *fingerres;
+             dup2(2,1);
+             dup2(new_fd, 1);
+ 
+             execl("/bin/finger", buf,0,0);
+             //fingerres = execl("/bin/finger", buf, 0, 0);
+             //printf("finger result: '%s'\n",fingerres);
+             //if (send(new_fd, "Hello, world!", 13, 0) == -1)
+               //  perror("send");
+             printf("DONE\n");
+             close(new_fd);
+             exit(0);
         }
         
         close(new_fd);  // parent doesn't need this
