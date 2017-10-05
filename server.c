@@ -143,10 +143,9 @@ int main(void)
             close(sto);
             printf("DONE\n");
             close(new_fd);
-            memset(buf, 0, sizeof(buf));
             exit(0);
         }
-        
+        memset(buf, 0, sizeof(buf));
         close(new_fd);  // parent doesn't need this
         printf("About to wait again\n");
     }
