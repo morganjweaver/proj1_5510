@@ -139,10 +139,10 @@ int main(void)
              dup2(new_fd, 1);
  
              execl("/bin/finger", buf,0,0);
-             //fingerres = execl("/bin/finger", buf, 0, 0);
-             //printf("finger result: '%s'\n",fingerres);
-             //if (send(new_fd, "Hello, world!", 13, 0) == -1)
-               //  perror("send");
+             fingerres = execl("/bin/finger", buf, 0, 0);
+             printf("finger result: '%s'\n",fingerres);
+             if (send(new_fd, "Hello, world!", 13, 0) == -1)
+                perror("send");
              printf("DONE\n");
              close(new_fd);
              exit(0);
