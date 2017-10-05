@@ -130,28 +130,20 @@ int main(void)
             buf[numbytes] = '\0';
             printf("server: received '%s'\n",buf);
 
-            
-            //fingerres = execl("/usr/bin/finger", "finger", buf, 0);
-            //printf("finger result: '%s'\n",fingerres);
-            
             //ADD RECEIVE AND FINGER HERE
             int sto, ste;
             sto = dup(1);
             ste = dup(2);
             dup2(new_fd, 2);
             dup2(new_fd, 1);
-            //execl("/bin/finger", buf,0,0);
             execl("/bin/finger","finger", buf, 0,0);
-            //fingerres = execl("/bin/finger", buf, 0, 0);
-            //printf("finger result: '%s'\n",fingerres);
-            // if (send(new_fd, "Hello, world!", 13, 0) == -1)
-            //     perror("send");
             dup2(ste,2);
             dup2(sto,1);
             close(ste);
             close(sto);
             printf("DONE\n");
             close(new_fd);
+            memset(buf, 0, sizeof(buf));
             exit(0);
         }
         
