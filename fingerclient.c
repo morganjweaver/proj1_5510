@@ -43,9 +43,6 @@ int main(int argc, char *argv[])
     char *username = strsep(&argv[1], "@");
     char *host = strsep(&argv[1], ":");
     char *port = strsep(&argv[1], ":");
-    fprintf(stdout, "host: %s\n", host);
-    fprintf(stdout, "user: %s\n", username);
-    fprintf(stdout, "port: %s\n", port);
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -85,11 +82,8 @@ int main(int argc, char *argv[])
 
     freeaddrinfo(servinfo); // all done with this structure
 
-
     if (send(sockfd, username, sizeof(username), 0) == -1)
         perror("send error on client");
-
-    //close(new_fd);
 
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
         perror("error with receipt of data");

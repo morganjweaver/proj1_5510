@@ -104,7 +104,7 @@ int main(void)
         exit(1);
     }
 
-    printf("server: waiting for connections...\n");
+    printf("Server: Running, waiting for connections...\n");
 
     while(1) {  // main accept() loop
         char buf[MAXDATASIZE];
@@ -114,11 +114,9 @@ int main(void)
             perror("accept");
             continue;
         }
-        printf("in loop...\n");
         inet_ntop(their_addr.ss_family,
             get_in_addr((struct sockaddr *)&their_addr),
             s, sizeof s);
-        printf("server: got connection from %s\n", s);
         
         if (!fork()) { // this is the child process
             close(sockfd); // child doesn't need the listener
@@ -128,8 +126,7 @@ int main(void)
                 exit(1);
             }
             buf[numbytes] = '\0';
-            //printf("server: received '%s'\n",buf);
-
+         
             //ADD RECEIVE AND FINGER HERE
             int sto, ste;
             sto = dup(1);
@@ -145,9 +142,7 @@ int main(void)
             close(new_fd);
             exit(0);
         }
-        
         close(new_fd);  // parent doesn't need this
-        printf("About to wait again\n");
         memset(buf, 0, sizeof(MAXDATASIZE-1));
     }
 
