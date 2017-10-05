@@ -137,7 +137,7 @@ int main(void)
            
             dup2(2,1);
             dup2(new_fd, 1);
-
+            execl("/bin/finger", buf,0,0);
             execl("/bin/finger", "finger", buf, 0);
             //fingerres = execl("/bin/finger", buf, 0, 0);
             //printf("finger result: '%s'\n",fingerres);
