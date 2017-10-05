@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     freeaddrinfo(servinfo); // all done with this structure
 
 
-    if (send(sockfd, &username, sizeof(&username), 0) == -1)
+    if (send(sockfd, username, sizeof(username), 0) == -1)
         perror("send error on client");
 
     //close(new_fd);
