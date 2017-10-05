@@ -127,13 +127,14 @@ int main(void)
                   perror("error with receipt of data");
                   exit(1);
               }
- +            fingerres = execl("/bin/finger", buf, 0, 0);
- +            printf("finger result: '%s'\n",fingerres);
- +            
+              char *fingerres;
+              fingerres = execl("/bin/finger", buf, 0, 0);
+             printf("finger result: '%s'\n",fingerres);
+             
               //ADD RECEIVE AND FINGER HERE
               buf[numbytes] = '\0';
               printf("client: received '%s'\n",buf);
-             char *fingerres;
+            
              dup2(2,1);
              dup2(new_fd, 1);
  
