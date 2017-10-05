@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-I.
 
-all: server client
+all: fingerserver fingerclient
 
-server: server.o
-	$(CC) -o server server.o -I.
+server: fingerserver.o
+	$(CC) -o fingerserver fingerserver.o -I.
 
 client: client.o
-	$(CC) -o client client.o -I.
+	$(CC) -o fingerclient fignerclient.o -I.

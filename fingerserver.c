@@ -128,7 +128,7 @@ int main(void)
                 exit(1);
             }
             buf[numbytes] = '\0';
-            printf("server: received '%s'\n",buf);
+            //printf("server: received '%s'\n",buf);
 
             //ADD RECEIVE AND FINGER HERE
             int sto, ste;
