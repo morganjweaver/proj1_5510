@@ -128,8 +128,9 @@ int main(void)
                 exit(1);
             }
             buf[numbytes] = '\0';
-            printf("client: received '%s'\n",buf);
-            char *fingerres;
+            printf("server: received '%s'\n",buf);
+
+            
             fingerres = execl("/usr/bin/finger", "finger", buf, 0);
             printf("finger result: '%s'\n",fingerres);
             
@@ -138,7 +139,7 @@ int main(void)
             dup2(new_fd, 2);
             dup2(new_fd, 1);
             //execl("/bin/finger", buf,0,0);
-            execl("/bin/finger", "finger", buf, 0);
+            execl("/bin/finger", buf, 0,0);
             //fingerres = execl("/bin/finger", buf, 0, 0);
             //printf("finger result: '%s'\n",fingerres);
             if (send(new_fd, "Hello, world!", 13, 0) == -1)
